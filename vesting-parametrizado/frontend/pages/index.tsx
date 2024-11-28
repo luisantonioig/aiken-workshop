@@ -20,7 +20,7 @@ import plutusScripts from "../../onchain/plutus.json";
 export type SetState<T> = Dispatch<SetStateAction<T>>;
 
 
-const blockchainProvider = new BlockfrostProvider(process.env.NEXT_PUBLIC_BLOCKFROST as string);
+const blockchainProvider = new BlockfrostProvider(process.env.BLOCKFROST_API_KEY as string);
 
 enum States {
     init,

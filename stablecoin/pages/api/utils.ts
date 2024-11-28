@@ -26,7 +26,7 @@ export function getPlutusScriptParams(title:string, params: object[] | Data[]): 
 }
 
 export function initializeBlockchainProvider(): BlockfrostProvider {
-  const apiKey = process.env.NEXT_PUBLIC_BLOCKFROST_API_KEY;
+  const apiKey = process.env.BLOCKFROST_API_KEY;
   if (!apiKey) {
     throw new Error("Blockfrost API key is missing");
   }

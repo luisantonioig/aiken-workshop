@@ -31,7 +31,7 @@ const script: PlutusScript = {
 };
 
 const scriptAddress = resolvePlutusScriptAddress(script);
-const blockchainProvider = new BlockfrostProvider(process.env.NEXT_PUBLIC_BLOCKFROST as string);
+const blockchainProvider = new BlockfrostProvider(process.env.BLOCKFROST_API_KEY as string);
 
 enum States {
     init,
