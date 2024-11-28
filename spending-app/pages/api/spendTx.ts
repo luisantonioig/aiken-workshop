@@ -32,7 +32,7 @@ export async function unlockFromScript(wallet: BrowserWallet,  code: string, txH
     
     function calculateInvalidBefore(): number {
         return unixTimeToEnclosingSlot(
-            Date.now() - 15000,
+            Date.now() - 30000,
             SLOT_CONFIG_NETWORK.preprod
         ) + 1;
     }
