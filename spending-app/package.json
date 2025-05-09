@@ -9,8 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@meshsdk/core": "^1.7.18",
-    "@meshsdk/react": "^1.7.18",
+    "@meshsdk/core": "^1.9.0-beta-39",
+    "@meshsdk/react": "^1.9.0-beta-39",
     "cbor": "^9.0.2",
     "next": "14.2.15",
     "react": "^18",

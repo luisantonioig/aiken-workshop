@@ -1,8 +1,8 @@
-import { BrowserWallet, Transaction, Data, deserializeAddress, unixTimeToEnclosingSlot, SLOT_CONFIG_NETWORK} from "@meshsdk/core";
+import { IWallet, Transaction, Data, deserializeAddress, unixTimeToEnclosingSlot, SLOT_CONFIG_NETWORK} from "@meshsdk/core";
 import { initializeBlockchainProvider } from "./utils";
 const blockchainProvider = initializeBlockchainProvider();
 
-export async function sendToScript(wallet: BrowserWallet, scriptAddress:string, lovelace: string, datum:Data) {    
+export async function sendToScript(wallet: IWallet, scriptAddress:string, lovelace: string, datum:Data) {    
     const tx = new Transaction({ initiator: wallet })
 	.sendLovelace(
 	    {
@@ -28,7 +28,7 @@ export async function sendToScript(wallet: BrowserWallet, scriptAddress:string, 
     return false;
 }
 
-export async function unlockFromScript(wallet: BrowserWallet,  code: string, txHash:string, index: number, redeemer:string) {
+export async function unlockFromScript(wallet: IWallet,  code: string, txHash:string, index: number, redeemer:string) {
     
     function calculateInvalidBefore(): number {
         return unixTimeToEnclosingSlot(

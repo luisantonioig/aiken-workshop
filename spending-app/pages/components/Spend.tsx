@@ -195,7 +195,8 @@ const Customized = () => {
 							>
 								{item.output.amount.map(asset =>
 									asset.unit === "lovelace" ?
-										`Spend ${asset.quantity} ADAs with datum: ${item.output.plutusData ? JSON.stringify(deserializeDatum(item.output.plutusData), null, 2) : "No datum available"}`
+										`Spend ${asset.quantity} ADAs ${item.output.plutusData ? JSON.stringify(deserializeDatum(item.output.plutusData), (_key, value) =>
+  typeof value === 'bigint' ? value.toString() : value) : "No data"}`
 										: ""
 								)}
 							</button>
