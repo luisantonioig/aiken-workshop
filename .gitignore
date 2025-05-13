@@ -37,4 +37,4 @@ bookmarks
 # Environment files (en cualquier subcarpeta)
 **/.env
 **/.env.*
-!**/.env.local
+**/.env.local

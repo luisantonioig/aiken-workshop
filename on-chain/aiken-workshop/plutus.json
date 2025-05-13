@@ -35,12 +35,57 @@
       },
       "compiledCode": "585c01010029800aba2aba1aab9eaab9dab9a4888896600264653001300600198031803800cc0180092225980099b8748008c01cdd500144c8cc892898050009805180580098041baa0028b200c180300098019baa0068a4d13656400401",
       "hash": "d27ccc13fab5b782984a3d1f99353197ca1a81be069941ffc003ee75"
+    },
+    {
+      "title": "placeholder.signature.spend",
+      "datum": {
+        "title": "datum",
+        "schema": {
+          "$ref": "#/definitions/placeholder~1SignatureDatum"
+        }
+      },
+      "redeemer": {
+        "title": "_redeemer",
+        "schema": {
+          "$ref": "#/definitions/Data"
+        }
+      },
+      "compiledCode": "58bc01010029800aba2aba1aab9faab9eaab9dab9a48888896600264646644b30013370e900118031baa00189919912cc004cdc3a400060126ea800626466446600400400244b30010018a508acc004cdc79bae300f0010038a518998010011808000a01640386eb0c034c038c038c038c038c038c038c038c038c02cdd518068041bae300c300a3754601860146ea80062c8040c028004c028c02c004c01cdd5000c59005180380098039804000980380098019baa0078a4d1365640041",
+      "hash": "7ee33b926834bd7d983ca9d433cee0cc1918ed5bcb5f78ab795d7057"
+    },
+    {
+      "title": "placeholder.signature.else",
+      "redeemer": {
+        "schema": {}
+      },
+      "compiledCode": "58bc01010029800aba2aba1aab9faab9eaab9dab9a48888896600264646644b30013370e900118031baa00189919912cc004cdc3a400060126ea800626466446600400400244b30010018a508acc004cdc79bae300f0010038a518998010011808000a01640386eb0c034c038c038c038c038c038c038c038c038c02cdd518068041bae300c300a3754601860146ea80062c8040c028004c028c02c004c01cdd5000c59005180380098039804000980380098019baa0078a4d1365640041",
+      "hash": "7ee33b926834bd7d983ca9d433cee0cc1918ed5bcb5f78ab795d7057"
     }
   ],
   "definitions": {
     "Data": {
       "title": "Data",
       "description": "Any Plutus data."
+    },
+    "aiken/crypto/VerificationKeyHash": {
+      "title": "VerificationKeyHash",
+      "dataType": "bytes"
+    },
+    "placeholder/SignatureDatum": {
+      "title": "SignatureDatum",
+      "anyOf": [
+        {
+          "title": "SignatureDatum",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "title": "owner",
+              "$ref": "#/definitions/aiken~1crypto~1VerificationKeyHash"
+            }
+          ]
+        }
+      ]
     }
   }
 }
