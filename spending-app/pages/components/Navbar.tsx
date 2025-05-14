@@ -1,4 +1,5 @@
 import { CardanoWallet } from "@meshsdk/react";
+import { PubKeyHash } from "./Label"
 
 export const Navbar = () => {
 
@@ -6,7 +7,7 @@ export const Navbar = () => {
     <nav className="bg-customBackground p-4">
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center space-x-2">
-          <span className="text-customFonts font-light text-3xl">Plutus scripts</span>
+          <PubKeyHash />
         </div>
         <div className="text-customFonts text-xl font-light">
           <CardanoWallet isDark={true} />

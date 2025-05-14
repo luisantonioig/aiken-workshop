@@ -66,7 +66,7 @@ const Customized = () => {
 									await sendToScript(wallet, scriptAddress, lovelace, datum);
 							}
 					} catch (err) {
-							alert("Error en los datos. Asegúrate de que el datum sea válido para el tipo seleccionado.");
+							alert("Error en los datos. Asegúrate de que el datum sea válido para el tipo seleccionado." + err);
 					}
 			} else {
 					alert("Error en los datos lovelace y/o datum");
