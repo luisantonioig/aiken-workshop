@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { useWallet } from "@meshsdk/react";
-import { applyCborEncoding,  deserializeDatum,  PlutusScript, resolvePlutusScriptAddress, UTxO } from "@meshsdk/core"
+import { applyCborEncoding,  deserializeDatum, Data, PlutusScript, resolvePlutusScriptAddress, UTxO } from "@meshsdk/core"
+
 
 import "@meshsdk/react/styles.css";
 
 import { sendToScript, unlockFromScript } from "../api/spendTx.ts";
-import { initializeBlockchainProvider } from "../api/utils.ts";
+import { parseData, initializeBlockchainProvider } from "../api/utils.ts";
 
 const blockchainProvider = initializeBlockchainProvider();
 
@@ -61,12 +62,13 @@ const Customized = () => {
 			if (lovelace !== "" && error === "" && datum !== "") {
 					try {
 							if (datumType === "constructor") {
-									await sendToScript(wallet, scriptAddress, lovelace, JSON.parse(datum));
+                  const parsed: Data = parseData(JSON.parse(datum));
+									await sendToScript(wallet, scriptAddress, lovelace, parsed);
 							} else {
 									await sendToScript(wallet, scriptAddress, lovelace, datum);
 							}
 					} catch (err) {
-							alert("Error en los datos. Asegúrate de que el datum sea válido para el tipo seleccionado." + err);
+				    alert("Error en los datos. Asegúrate de que el datum sea válido para el tipo seleccionado." + err);
 					}
 			} else {
 					alert("Error en los datos lovelace y/o datum");

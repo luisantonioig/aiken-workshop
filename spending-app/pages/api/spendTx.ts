@@ -1,5 +1,6 @@
 import { IWallet, Transaction, Data, deserializeAddress, unixTimeToEnclosingSlot, SLOT_CONFIG_NETWORK} from "@meshsdk/core";
 import { initializeBlockchainProvider } from "./utils";
+
 const blockchainProvider = initializeBlockchainProvider();
 
 export async function sendToScript(wallet: IWallet, scriptAddress:string, lovelace: string, datum:Data) {    
