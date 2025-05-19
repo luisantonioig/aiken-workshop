@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from "react";
+
+
+import React, { useEffect, useState, useCallback } from "react";
 import { useWallet } from "@meshsdk/react";
 import { IWallet, deserializeAddress } from "@meshsdk/core"
 
@@ -13,6 +15,17 @@ const getPKH = async (wallet: IWallet) => {
 export const PubKeyHash = () => {
     const { wallet, connected } = useWallet();
     const [pubKeyHash, setPubKeyHash] = useState("")
+    
+    const handleCopy = useCallback(() => {
+    navigator.clipboard
+      .writeText(pubKeyHash)
+      .then(() => {
+        alert('Tu llave pública ha sido copiada.');
+      })
+      .catch(err => {
+        console.error('Error copiando al portapapeles:', err);
+      });
+  }, [pubKeyHash]);
 
 
     useEffect(() => {
@@ -21,6 +34,7 @@ export const PubKeyHash = () => {
       .catch(err => console.error(err));
     },[connected]);
     return (
-          <span className="text-customFonts font-light text-3xl">{connected ? pubKeyHash: "Conecta tu billetera"}</span>
+          <span onClick={handleCopy} style={{ cursor: 'pointer' }} className="text-customFonts font-light text-xl text-white
+           hover:opacity-80 hover:underline transition duration-200">{connected ? pubKeyHash + "📋": "Conecta tu billetera"}</span>
 	);
 };
