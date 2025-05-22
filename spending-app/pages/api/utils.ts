@@ -8,47 +8,48 @@ export function initializeBlockchainProvider(): BlockfrostProvider {
   return new BlockfrostProvider(apiKey);
 }
 
-export const blockchainProvider = initializeBlockchainProvider()
+export const blockchainProvider = initializeBlockchainProvider();
 
 export function parseData(input: any): Data {
   if (
-    input !== null
-    && typeof input === 'object'
-    && 'bytes' in input
-    && Object.keys(input).length === 1
+    input !== null &&
+    typeof input === "object" &&
+    "bytes" in input &&
+    Object.keys(input).length === 1
   ) {
-    return (input as {bytes: string}).bytes;
+    return (input as { bytes: string }).bytes;
   }
 
   if (
-    input !== null
-    && typeof input === 'object'
-    && 'number' in input
-    && Object.keys(input).length === 1
+    input !== null &&
+    typeof input === "object" &&
+    "number" in input &&
+    Object.keys(input).length === 1
   ) {
-    return BigInt((input as {number: number}).number);
+    return BigInt((input as { number: number }).number);
   }
 
-
-  if (typeof input === 'string' || typeof input === 'number' || typeof input === 'bigint') {
+  if (
+    typeof input === "string" ||
+    typeof input === "number" ||
+    typeof input === "bigint"
+  ) {
     return input;
   }
-
 
   if (Array.isArray(input)) {
     return input.map(parseData);
   }
 
-
   if (
-    input !== null
-    && typeof input === 'object'
-    && 'alternative' in input
-    && Array.isArray(input.fields)
+    input !== null &&
+    typeof input === "object" &&
+    "alternative" in input &&
+    Array.isArray(input.fields)
   ) {
     return {
       alternative: input.alternative,
-      fields: input.fields.map(parseData)
+      fields: input.fields.map(parseData),
     };
   }
 

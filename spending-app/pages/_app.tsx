@@ -6,10 +6,10 @@ import Head from "next/head";
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <MeshProvider>
-        <Head>
-          <title>Customized types - Spend</title>
-        </Head>
-        <Component {...pageProps} />
+      <Head>
+        <title>Customized types - Spend</title>
+      </Head>
+      <Component {...pageProps} />
     </MeshProvider>
   );
 }
