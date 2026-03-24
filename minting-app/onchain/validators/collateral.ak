@@ -2,6 +2,8 @@ use cardano/assets.{PolicyId}
 use aiken/crypto.{VerificationKeyHash}
 use cardano/transaction.{Transaction, OutputReference}
 use cardano/assets.{quantity_of}
+use cardano/assets
+use cardano/transaction
 use aiken/collection/list.{has}
 
 const stablecoin_token_name = "Euro Stablecoin"
@@ -57,4 +59,78 @@ validator collateral {
       Redeem -> check_stablecoin_amount? && check_signed_by_col_owner?
     }
   }
+}
+
+const test_policy_id =
+  #"00010203040506070809000102030405060708090001020304050607"
+
+const test_owner =
+  #"33330203040506070809333302030405060708093333020304050607"
+
+const own_ref =
+  OutputReference {
+    transaction_id: transaction.placeholder.id,
+    output_index: 0,
+  }
+
+fn test_datum(amount: Int) -> CollateralDatum {
+  CollateralDatum {
+    col_minting_policy_id: test_policy_id,
+    col_owner: test_owner,
+    col_stablecoin_amount: amount,
+  }
+}
+
+test collateral_get_total_minted_stablecoin_reads_negative_mint() {
+  let tx =
+    Transaction {
+      ..transaction.placeholder,
+      mint: assets.from_asset(test_policy_id, stablecoin_token_name, -50),
+    }
+
+  get_total_minted_stablecoin(tx, test_policy_id) == -50
+}
+
+test collateral_redeem_accepts_matching_burn_and_owner_signature() {
+  let tx =
+    Transaction {
+      ..transaction.placeholder,
+      mint: assets.from_asset(test_policy_id, stablecoin_token_name, -250),
+      extra_signatories: [test_owner],
+    }
+
+  collateral.spend(Some(test_datum(250)), Redeem, own_ref, tx)
+}
+
+test collateral_redeem_rejects_missing_owner_signature() {
+  let tx =
+    Transaction {
+      ..transaction.placeholder,
+      mint: assets.from_asset(test_policy_id, stablecoin_token_name, -250),
+      extra_signatories: [],
+    }
+
+  !collateral.spend(Some(test_datum(250)), Redeem, own_ref, tx)
+}
+
+test collateral_liquidate_accepts_matching_burn_without_owner_signature() {
+  let tx =
+    Transaction {
+      ..transaction.placeholder,
+      mint: assets.from_asset(test_policy_id, stablecoin_token_name, -250),
+      extra_signatories: [],
+    }
+
+  collateral.spend(Some(test_datum(250)), Liquidate, own_ref, tx)
+}
+
+test collateral_liquidate_rejects_wrong_burn_amount() {
+  let tx =
+    Transaction {
+      ..transaction.placeholder,
+      mint: assets.from_asset(test_policy_id, stablecoin_token_name, -200),
+      extra_signatories: [],
+    }
+
+  !collateral.spend(Some(test_datum(250)), Liquidate, own_ref, tx)
 }

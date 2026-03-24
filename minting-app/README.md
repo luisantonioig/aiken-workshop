@@ -45,7 +45,7 @@ Then open `http://localhost:3000`.
 ## Security Notes
 
 - The Blockfrost API key is no longer exposed in the client.
-- The endpoint [`pages/api/mint.ts`](/home/antonio/personal/aiken-workshop/minting-app/pages/api/mint.ts) builds and submits the transaction from the server.
+- The endpoint `pages/api/mint.ts` builds and submits the transaction from the server.
 - The UI validates wallet connection, expected network, UTxOs, and collateral before attempting the mint.
 
 ## Testing
@@ -67,9 +67,15 @@ aiken check
 
 ### What is covered
 
-The test suite in [`tests/mint-api.test.ts`](/home/antonio/personal/aiken-workshop/minting-app/tests/mint-api.test.ts) validates the server-side mint flow with mocked Mesh SDK dependencies.
+The test suite in `tests/mint-api.test.ts` validates the server-side mint flow with mocked Mesh SDK dependencies.
 
-The on-chain test suite currently lives in [`onchain/validators/minting.ak`](/home/antonio/personal/aiken-workshop/minting-app/onchain/validators/minting.ak) and validates core minting-policy rules directly in Aiken.
+The on-chain test suites currently live in:
+
+- `onchain/validators/minting.ak`
+- `onchain/validators/collateral.ak`
+- `onchain/validators/oracle.ak`
+
+They validate the core validator rules directly in Aiken.
 
 It currently verifies that:
 
@@ -84,6 +90,8 @@ It currently verifies that:
 - collateral datum checks accept valid transactions and reject missing signatures
 - mint-limit checks accept transactions with enough collateral and reject those above the limit
 - burn matching checks accept exact negative minting for collateral redemption
+- the collateral validator accepts valid redeem and liquidation paths and rejects incorrect burn amounts
+- the oracle validator accepts operator-signed mint and update flows and rejects unsigned attempts
 
 ### What is mocked
 
@@ -108,5 +116,5 @@ These tests do not prove that:
 
 For that, you should complement them with:
 
-1. Aiken tests in [`onchain`](/home/antonio/personal/aiken-workshop/minting-app/onchain)
+1. Aiken tests in `onchain/`
 2. manual end-to-end testing with a real wallet on `preprod`
