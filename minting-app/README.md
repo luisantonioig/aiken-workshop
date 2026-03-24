@@ -58,9 +58,18 @@ The repository includes automated tests for the mint API route.
 npm test
 ```
 
+### Run the Aiken contract tests
+
+```bash
+cd onchain
+aiken check
+```
+
 ### What is covered
 
 The test suite in [`tests/mint-api.test.ts`](/home/antonio/personal/aiken-workshop/minting-app/tests/mint-api.test.ts) validates the server-side mint flow with mocked Mesh SDK dependencies.
+
+The on-chain test suite currently lives in [`onchain/validators/minting.ak`](/home/antonio/personal/aiken-workshop/minting-app/onchain/validators/minting.ak) and validates core minting-policy rules directly in Aiken.
 
 It currently verifies that:
 
@@ -70,6 +79,11 @@ It currently verifies that:
 - the API rejects build requests without collateral
 - the `submit` action sends the signed transaction through the Blockfrost provider
 - the API returns `405` for unsupported HTTP methods
+- the minting helper computes the expected maximum mint amount
+- the minting policy reads the minted stablecoin quantity correctly
+- collateral datum checks accept valid transactions and reject missing signatures
+- mint-limit checks accept transactions with enough collateral and reject those above the limit
+- burn matching checks accept exact negative minting for collateral redemption
 
 ### What is mocked
 

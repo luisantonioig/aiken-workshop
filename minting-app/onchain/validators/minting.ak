@@ -3,6 +3,9 @@ use cardano/assets.{PolicyId, lovelace_of,quantity_of}
 use cardano/transaction.{Transaction,Input,NoDatum,DatumHash,InlineDatum, Output, find_script_outputs}
 use aiken/collection/list
 use cardano/address.{Script}
+use cardano/address
+use cardano/assets
+use cardano/transaction
 
 const stablecoin_token_name = "Euro Stablecoin"
 
@@ -234,4 +237,152 @@ pub fn get_total_minted_stablecoin(
 // /// 
 fn max_mint(col_amount: Int, rate: Int, col_min_percent: Int) -> Int {
   col_amount / col_min_percent * rate / 1_000_000
+}
+
+const test_policy_id =
+  #"00010203040506070809000102030405060708090001020304050607"
+
+const test_oracle_hash =
+  #"11110203040506070809111102030405060708091111020304050607"
+
+const test_collateral_hash =
+  #"22220203040506070809222202030405060708092222020304050607"
+
+const test_owner =
+  #"33330203040506070809333302030405060708093333020304050607"
+
+fn test_params() -> MintingParams {
+  MintingParams {
+    oracle_validator: test_oracle_hash,
+    collateral_validator: test_collateral_hash,
+    collateral_min_percent: 150,
+  }
+}
+
+fn collateral_output(stablecoin_amount: Int, lovelace_amount: Int) -> Output {
+  Output {
+    address: address.from_script(test_collateral_hash),
+    value: assets.from_lovelace(lovelace_amount),
+    datum:
+      InlineDatum(
+        CollateralDatum {
+          col_minting_policy_id: test_policy_id,
+          col_owner: test_owner,
+          col_stablecoin_amount: stablecoin_amount,
+        },
+      ),
+    reference_script: None,
+  }
+}
+
+fn collateral_input(stablecoin_amount: Int, lovelace_amount: Int) -> Input {
+  Input {
+    output_reference:
+      transaction.OutputReference {
+        transaction_id: transaction.placeholder.id,
+        output_index: 0,
+      },
+    output: collateral_output(stablecoin_amount, lovelace_amount),
+  }
+}
+
+fn oracle_input(rate: Int) -> Input {
+  Input {
+    output_reference:
+      transaction.OutputReference {
+        transaction_id: transaction.placeholder.id,
+        output_index: 1,
+      },
+    output:
+      Output {
+        address: address.from_script(test_oracle_hash),
+        value: assets.zero,
+        datum: InlineDatum(rate),
+        reference_script: None,
+      },
+  }
+}
+
+test max_mint_calculates_expected_capacity() {
+  max_mint(4_500_000, 100, 150) == 3
+}
+
+test get_total_minted_stablecoin_reads_positive_mint() {
+  let tx =
+    Transaction {
+      ..transaction.placeholder,
+      mint: assets.from_asset(test_policy_id, stablecoin_token_name, 250),
+    }
+
+  get_total_minted_stablecoin(tx, test_policy_id) == 250
+}
+
+test check_collateral_output_datum_accepts_matching_owner_and_amount() {
+  let tx =
+    Transaction {
+      ..transaction.placeholder,
+      mint: assets.from_asset(test_policy_id, stablecoin_token_name, 250),
+      outputs: [collateral_output(250, 4_500_000)],
+      extra_signatories: [test_owner],
+    }
+
+  check_collateral_output_datum(test_params(), test_policy_id, tx)
+}
+
+test check_collateral_output_datum_rejects_missing_owner_signature() {
+  let tx =
+    Transaction {
+      ..transaction.placeholder,
+      mint: assets.from_asset(test_policy_id, stablecoin_token_name, 250),
+      outputs: [collateral_output(250, 4_500_000)],
+      extra_signatories: [],
+    }
+
+  !check_collateral_output_datum(test_params(), test_policy_id, tx)
+}
+
+test check_max_mint_accepts_transaction_with_enough_collateral() {
+  let tx =
+    Transaction {
+      ..transaction.placeholder,
+      reference_inputs: [oracle_input(100)],
+      outputs: [collateral_output(3, 4_500_000)],
+      mint: assets.from_asset(test_policy_id, stablecoin_token_name, 3),
+    }
+
+  check_max_mint(test_params(), test_policy_id, tx)
+}
+
+test check_max_mint_rejects_transaction_above_limit() {
+  let tx =
+    Transaction {
+      ..transaction.placeholder,
+      reference_inputs: [oracle_input(100)],
+      outputs: [collateral_output(4, 4_500_000)],
+      mint: assets.from_asset(test_policy_id, stablecoin_token_name, 4),
+    }
+
+  !check_max_mint(test_params(), test_policy_id, tx)
+}
+
+test check_burn_matches_datum_accepts_exact_negative_mint() {
+  let tx =
+    Transaction {
+      ..transaction.placeholder,
+      inputs: [collateral_input(250, 4_500_000)],
+      mint: assets.from_asset(test_policy_id, stablecoin_token_name, -250),
+    }
+
+  check_burn_matches_datum(test_params(), test_policy_id, tx)
+}
+
+test check_owner_signature_rejects_when_signer_is_missing() {
+  let tx =
+    Transaction {
+      ..transaction.placeholder,
+      inputs: [collateral_input(250, 4_500_000)],
+      extra_signatories: [],
+    }
+
+  !check_owner_signature(test_params(), tx)
 }
