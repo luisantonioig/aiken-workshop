@@ -1,6 +1,10 @@
 {
   "compilerOptions": {
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -10,12 +14,27 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "incremental": true,
     "paths": {
-      "@/*": ["./*"]
-    }
+      "@/*": [
+        "./*"
+      ]
+    },
+    "target": "ES2017"
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/api/fetchUtxos.ts~", "pages/index.tsx~", "pages/enums/states.ts~", "pages/components/Oracle.tsx~", "pages/api/oracle.ts~", "pages/api/utils.ts~"],
-  "exclude": ["node_modules"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "pages/api/fetchUtxos.ts~",
+    "pages/index.tsx~",
+    "pages/enums/states.ts~",
+    "pages/components/Oracle.tsx~",
+    "pages/api/oracle.ts~",
+    "pages/api/utils.ts~"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
