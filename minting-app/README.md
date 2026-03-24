@@ -1,49 +1,98 @@
 # Minting App
 
-Aplicacion de ejemplo para mintear tokens en Cardano usando Next.js, Mesh y contratos Aiken.
+Example application for minting tokens on Cardano using Next.js, Mesh, and Aiken smart contracts.
 
-## Requisitos
+## Requirements
 
 - Node.js 20+
-- Una wallet compatible con CIP-30
-- Una API key de Blockfrost para la red que vayas a usar
+- A CIP-30 compatible wallet
+- A Blockfrost API key for the network you want to use
 
-## Variables de entorno
+## Environment Variables
 
-Crea un archivo `.env.local` en la raiz con:
+Create a `.env.local` file in the project root:
 
 ```env
-BLOCKFROST_API_KEY=tu_project_id_de_blockfrost
+BLOCKFROST_API_KEY=your_blockfrost_project_id
 CARDANO_NETWORK=preprod
 ```
 
-`CARDANO_NETWORK` puede ser `testnet`, `preview`, `preprod` o `mainnet`. Si no se define, la app usa `preprod`.
+`CARDANO_NETWORK` can be `testnet`, `preview`, `preprod`, or `mainnet`. If it is not set, the app defaults to `preprod`.
 
-## Instalacion
+## Installation
 
 ```bash
 npm install
 ```
 
-## Desarrollo
+## Development
 
 ```bash
 npm run dev
 ```
 
-Luego abre `http://localhost:3000`.
+Then open `http://localhost:3000`.
 
-## Flujo de mint
+## Mint Flow
 
-1. Conecta tu wallet.
-2. Pega el CBOR del script de minting.
-3. Captura cantidad, nombre del token y redeemer.
-4. La app pide al servidor construir la transaccion con Blockfrost.
-5. La wallet firma la transaccion.
-6. El servidor la envia a la red.
+1. Connect your wallet.
+2. Paste the minting script CBOR.
+3. Enter the amount, token name, and redeemer.
+4. The app asks the server to build the transaction with Blockfrost.
+5. The wallet signs the transaction.
+6. The server submits the transaction to the network.
 
-## Notas de seguridad
+## Security Notes
 
-- La API key de Blockfrost ya no se expone en el cliente.
-- El endpoint [`pages/api/mint.ts`](/home/antonio/personal/aiken-workshop/minting-app/pages/api/mint.ts) construye y envia la transaccion desde el servidor.
-- La UI valida wallet conectada, red esperada, UTxOs y collateral antes de intentar el mint.
+- The Blockfrost API key is no longer exposed in the client.
+- The endpoint [`pages/api/mint.ts`](/home/antonio/personal/aiken-workshop/minting-app/pages/api/mint.ts) builds and submits the transaction from the server.
+- The UI validates wallet connection, expected network, UTxOs, and collateral before attempting the mint.
+
+## Testing
+
+The repository includes automated tests for the mint API route.
+
+### Run the tests
+
+```bash
+npm test
+```
+
+### What is covered
+
+The test suite in [`tests/mint-api.test.ts`](/home/antonio/personal/aiken-workshop/minting-app/tests/mint-api.test.ts) validates the server-side mint flow with mocked Mesh SDK dependencies.
+
+It currently verifies that:
+
+- the `build` action creates an unsigned mint transaction
+- the token name is converted to hex before being added to the transaction
+- the encoded script, collateral input, and network are passed to the transaction builder
+- the API rejects build requests without collateral
+- the `submit` action sends the signed transaction through the Blockfrost provider
+- the API returns `405` for unsupported HTTP methods
+
+### What is mocked
+
+These tests do not call the real Cardano network.
+
+They mock:
+
+- `Transaction` from `@meshsdk/core`
+- `BlockfrostProvider`
+- `applyCborEncoding`
+- network validation through `isNetwork`
+
+This makes the tests fast and deterministic while still checking that the route uses the transaction builder correctly.
+
+### What is not covered yet
+
+These tests do not prove that:
+
+- the Aiken validators accept or reject transactions correctly
+- a real wallet signs the transaction as expected
+- Blockfrost accepts and propagates the transaction on `preprod`
+
+For that, you should complement them with:
+
+1. Aiken tests in [`onchain`](/home/antonio/personal/aiken-workshop/minting-app/onchain)
+2. manual end-to-end testing with a real wallet on `preprod`
